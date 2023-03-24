@@ -2,21 +2,30 @@ import {SafeAreaView, Text, TextInput, View, TouchableOpacity, ScrollView} from 
 import Button from "../../components/Button";
 import InputBox from "../../components/Input";
 import styles from "./styles";
+import Anchor from "../../components/Anchor";
+import {useNavigation} from "@react-navigation/native";
+
+
 const Login = () => {
+    const nav = useNavigation();
+
     return (
         <SafeAreaView>
+            {/*     Scroll View bc it makes the keyboard go away on click outside input     */}
             <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+                {/*     Login Screen    */}
                 <Text style={styles.title}>Welcome back!</Text>
                 <View style={styles.input_group}>
-                    <InputBox placeholder={'Email'} />
-                    <InputBox placeholder={'Password'} />
+                    {/*     Inputs      */}
+                    <InputBox placeholder={'Email'}/>
+                    <InputBox placeholder={'Password'}/>
                 </View>
-                <Button text={'Log in'} />
+                <Button text={'Log in'}/>
+
+                {/*     Text at the bottom      */}
                 <View style={styles.text_group}>
                     <Text style={styles.text}>Not registered? </Text>
-                    <TouchableOpacity>
-                        <Text style={[styles.text, styles.anchor]}>Sign up!</Text>
-                    </TouchableOpacity>
+                    <Anchor text={'Sign up!'} onPress={() => nav.navigate('signup')}/>
                 </View>
 
             </ScrollView>

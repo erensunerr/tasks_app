@@ -14,13 +14,20 @@ const styles = StyleSheet.create({
     input_group: {
         marginVertical: 32,
     },
+    text: {
+        fontSize: 16,
+        color: "#606060",
+        marginHorizontal: 4,
+    },
+    anchor: {
+        color: "#4c0d80",
+        fontWeight: "bold",
+    },
     text_group: {
         flexDirection: "row",
         marginTop: 24,
         justifyContent: "center",
-    },
-    text: {
-
+        flexWrap: "wrap",
     }
 });
 

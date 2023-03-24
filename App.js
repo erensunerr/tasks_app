@@ -4,29 +4,19 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Onboarding from './src/screens/Onboarding';
 import {NavigationContainer} from "@react-navigation/native";
 import Login from "./src/screens/Login";
+import Signup from "./src/screens/Signup";
 
 const OnboardingStack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <OnboardingStack.Navigator>
-        <OnboardingStack.Screen name={'login'} component={Login} options={{
-          headerShown: false,
-        }} />
-
-        <OnboardingStack.Screen name={'onboarding'} component={Onboarding} options={{
-          headerShown: false,
-        }} />
+      <OnboardingStack.Navigator screenOptions={{
+        headerShown: false
+      }}>
+          <OnboardingStack.Screen name={'onboarding'} component={Onboarding} />
+          <OnboardingStack.Screen name={'signup'} component={Signup}  />
+          <OnboardingStack.Screen name={'login'} component={Login} />
       </OnboardingStack.Navigator>
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
