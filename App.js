@@ -3,15 +3,20 @@ import { StyleSheet, Text, View } from 'react-native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Onboarding from './src/screens/Onboarding';
 import {NavigationContainer} from "@react-navigation/native";
+import Login from "./src/screens/Login";
 
 const OnboardingStack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
       <OnboardingStack.Navigator>
+        <OnboardingStack.Screen name={'login'} component={Login} options={{
+          headerShown: false,
+        }} />
+
         <OnboardingStack.Screen name={'onboarding'} component={Onboarding} options={{
           headerShown: false,
-        }}/>
+        }} />
       </OnboardingStack.Navigator>
     </NavigationContainer>
   );

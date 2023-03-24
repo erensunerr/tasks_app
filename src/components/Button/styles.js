@@ -7,7 +7,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingVertical: 16,
         borderRadius: 8,
-        width: '80%'
+        width: '100%'
+    },
+    secondary: {
+        backgroundColor: "#10869e"
     },
     text: {
         fontSize: 16,
