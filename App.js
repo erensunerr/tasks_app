@@ -1,12 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Onboarding from './src/screens/Onboarding';
+import {NavigationContainer} from "@react-navigation/native";
 
+const OnboardingStack = createNativeStackNavigator();
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <OnboardingStack.Navigator>
+        <OnboardingStack.Screen name={'onboarding'} component={Onboarding} options={{
+          headerShown: false,
+        }}/>
+      </OnboardingStack.Navigator>
+    </NavigationContainer>
   );
 }
 
