@@ -31,6 +31,12 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
+          <string>com.googleusercontent.apps.589504567275-6rjbddra58br2ko4feo94ni18iieml41</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
           <string>exp+tasksapp</string>
         </array>
       </dict>
