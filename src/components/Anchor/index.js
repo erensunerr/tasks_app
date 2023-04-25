@@ -1,12 +1,31 @@
-import {Text, TouchableOpacity} from "react-native";
-import styles from "./styles";
+import { Animated, Text } from "react-native";
+import {useState, useRef} from "react";
+import colors from "../../constants/colors";
 
-const Anchor = ({text, style, ...props}) => {
-    return <TouchableOpacity style={styles.container} {...props}>
-        <Text style={[styles.anchor, style]}>{text}</Text>
-    </TouchableOpacity>;
+const Anchor = ({children, onPress, style, ...props}) => {
+    // Change opacity on is hover.
+    const [isHovering, setIsHovering] = useState(false);
+
+    const opacity = isHovering ? 0.2 : 1.0;
+
+    const opacity_style = {
+        opacity,
+    };
+
+    return (
+        <Text
+            onPressIn={() => setIsHovering(true)}
+            onPressOut={() => setIsHovering(false)}
+            onPress={onPress}
+            style={[style, opacity_style]}
+            suppressHighlighting={true}
+        >
+            {/*     Suppress Highlighting removes the default background effect that occurs onPress.
+
+            */}
+            {children}
+        </Text>
+    );
 }
-
-// TODO: make this work within a text component instead of using a parent view.
 
 export default Anchor;

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "589504567275",
+    "project_id": "planify-3f223",
+    "storage_bucket": "planify-3f223.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:589504567275:android:8e396ae6372ba56a9f6bae",
+        "android_client_info": {
+          "package_name": "com.gerroo.tasks_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "589504567275-40q3fip5ieo5p619elmcj1etl3ih078g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gerroo.tasks_app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "589504567275-obmm38q22fgvaprnbdcg7g6eaqek5hp3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzluAkCa0j_y93TpAOGpm3O3PkYDZ4Zzc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "589504567275-obmm38q22fgvaprnbdcg7g6eaqek5hp3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "589504567275-6rjbddra58br2ko4feo94ni18iieml41.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.tasks"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
