@@ -1,7 +1,9 @@
-import {SafeAreaView, Text, TextInput, View, TouchableOpacity, ScrollView} from "react-native";
+import {SafeAreaView, Text, TextInput, View, TouchableOpacity, ScrollView, Alert} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 import {useState} from "react";
 import * as Linking from 'expo-linking';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 import Button from "../../../components/Button";
 import InputBox from "../../../components/InputBox";
@@ -10,6 +12,12 @@ import Checkbox from "../../../components/Checkbox";
 import LINKS from "../../../constants/links";
 
 import styles from "./styles";
+
+// TODOx: make a modal for auth errors, -> using alert
+// TODOx: add the first name and last name to firestore users collection
+// TODOx: confirm password, require legal agreements
+
+
 
 
 const Signup = () => {
@@ -23,8 +31,82 @@ const Signup = () => {
     const [confirmPass, setConfirmPass] = useState('');
     const [agreed, setAgreed] = useState(false);
 
+
+    const ALERTS = {
+        'local/password-does-not-match': [
+            'Passwords do not match',
+            'You need to review your password confirmation.',
+            [
+                {
+                    text: "Okie",
+                    onPress: () => setConfirmPass('')
+                }
+            ]
+        ],
+        'local/did-not-agree-legally': [
+            'Bruh agree to legal shitz',
+            'Cmon',
+            [
+                {
+                    text: "Okie",
+                    onPress: () => setEmail('')
+                }
+            ]
+        ],
+        'auth/email-already-in-use': [
+            'Email in use :(',
+            'This email has been used already.',
+            [
+                {
+                    text: "Okie",
+                    onPress: () => setEmail('')
+                }
+            ]
+        ]
+    }
+    const handleErrorWithAlert = (errorCode) => {
+        if (!(errorCode in ALERTS)) {
+            console.error(errorCode);
+            return
+        }
+
+        Alert.alert(...ALERTS[errorCode])
+        console.log(`${errorCode} handled successfully.`)
+    }
+
     const handleSignup = () => {
         console.log(`Signing up with ${firstName}, ${lastName}, ${email}, ${pass}, ${confirmPass}.`)
+        if (pass !== confirmPass) {
+            handleErrorWithAlert('local/password-does-not-match');
+            return
+        }
+
+        if (!agreed) {
+            handleErrorWithAlert('local/did-not-agree-legally');
+            return
+        }
+
+        auth()
+            .createUserWithEmailAndPassword(email, pass)
+            .then(async (userCredential) => {
+                const uid = userCredential.user.uid;
+                console.log('X')
+
+                // Add additional info to firestore.
+                const userDocRef = firestore()
+                    .collection('users').doc(uid);
+
+                await userDocRef.set({
+                    firstName,
+                    lastName,
+                });
+
+                console.log('User account created & signed in!');
+            })
+            .catch(error => {
+                handleErrorWithAlert(error.code);
+            });
+
     }
 
     return (
@@ -34,6 +116,10 @@ const Signup = () => {
                 {/*     Signup Screen    */}
                 <Text style={styles.title}>Join the hub!</Text>
                 <View style={styles.input_group}>
+                    {/*     DO NOT TRACK ALL THE VALUES IN DIFFERENT STATES
+                     Instead create a single state that contains keys like firstName: ''
+                     and an onChange function that adapts to the keys.
+                     */}
                     {/*     Inputs      */}
                     <InputBox
                         placeholder={'First Name'}

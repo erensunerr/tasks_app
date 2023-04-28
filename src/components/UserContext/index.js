@@ -1,12 +1,12 @@
 import {createContext, useState, useEffect} from "react";
 import auth from '@react-native-firebase/auth';
 
-const Context = createContext({
+const UserContext = createContext({
     user: null,
     loading: true,
 });
 
-function UserContext({children}) {
+function UserContextProvider({children}) {
     // Set an initializing state whilst Firebase connects
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState();
@@ -31,10 +31,11 @@ function UserContext({children}) {
     }
 
     return (
-        <Context.Provider value={context}>
+        <UserContext.Provider value={context}>
             { children }
-        </Context.Provider>
+        </UserContext.Provider>
     )
 }
 
 export default UserContext;
+export {UserContextProvider};

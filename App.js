@@ -6,23 +6,41 @@ import {NavigationContainer} from "@react-navigation/native";
 import Onboarding from './src/screens/auth/Onboarding';
 import Login from "./src/screens/auth/Login";
 import Signup from "./src/screens/auth/Signup";
-import UserContext from "./src/components/UserContext";
+import UserContext, {UserContextProvider} from "./src/components/UserContext";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import Demo from "./src/screens/app/Demo";
+import {useContext} from "react";
 
 
 const OnboardingStack = createNativeStackNavigator();
-export default function App() {
+
+function App() {
+    const {user, loading} = useContext(UserContext);
     return (
-    <NavigationContainer>
-        <UserContext>
-            <OnboardingStack.Navigator screenOptions={{
-              header: () => (<StatusBar style="dark" />),
-              gestureEnabled: false,
-            }}>
-              <OnboardingStack.Screen name={'onboarding'} component={Onboarding} />
-              <OnboardingStack.Screen name={'signup'} component={Signup}  />
-              <OnboardingStack.Screen name={'login'} component={Login} />
-            </OnboardingStack.Navigator>
-        </UserContext>
-    </NavigationContainer>
+        <OnboardingStack.Navigator screenOptions={{
+          header: () => (<StatusBar style="dark" />),
+          gestureEnabled: false,
+        }}>
+            {
+                user ?
+                <OnboardingStack.Screen name={'demo'} component={Demo} />
+                :
+                <>
+                    <OnboardingStack.Screen name={'onboarding'} component={Onboarding} />
+                    <OnboardingStack.Screen name={'signup'} component={Signup}  />
+                    <OnboardingStack.Screen name={'login'} component={Login} />
+                </>
+            }
+        </OnboardingStack.Navigator>
     );
 }
+
+// Wrap app with the necessary contexts before exporting.
+
+export default () => (
+    <UserContextProvider>
+        <NavigationContainer>
+            <App />
+        </NavigationContainer>
+    </UserContextProvider>
+)

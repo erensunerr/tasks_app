@@ -7,6 +7,8 @@ import Anchor from "../../../components/Anchor";
 import { useNavigation } from "@react-navigation/native";
 import colors from "../../../constants/colors";
 
+import auth from '@react-native-firebase/auth';
+
 
 
 const Login = () => {
@@ -19,7 +21,24 @@ const Login = () => {
 
     const handleLogin = () => {
         //  called when login is pressed
-        console.log(`Logging in with ${email}, ${pass}.`)
+        console.log(`Logging in with ${email}, ${pass}.`);
+
+        auth()
+            .signInWithEmailAndPassword(email, pass)
+            .then(() => {
+                console.log('User account created & signed in!');
+            })
+            .catch(error => {
+                if (error.code === 'auth/email-already-in-use') {
+                    console.log('That email address is already in use!');
+                }
+
+                if (error.code === 'auth/invalid-email') {
+                    console.log('That email address is invalid!');
+                }
+
+                console.error(error);
+            });
     }
 
     return (
