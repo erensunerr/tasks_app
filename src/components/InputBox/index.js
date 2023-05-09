@@ -7,7 +7,7 @@ const InputBox = ({ placeholder, style, ...otherProps }) => {
             style={[styles.input, style]}
             placeholder={placeholder}
             placeholderTextColor={"#606060"}
-            {...otherProps}
+            { ...otherProps }
         />
     );
 }

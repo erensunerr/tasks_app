@@ -1,7 +1,6 @@
 import {View, Text, SafeAreaView} from 'react-native';
 import Button from "../../../components/Button";
 import auth from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
 
 const Demo = () => {
     const logOut = async () => {

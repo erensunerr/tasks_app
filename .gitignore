@@ -83,3 +83,5 @@ dist/
 ## Firebase client identifiers
 #google-services.json
 #GoogleService-Info.plist
+
+tasksapp.app/

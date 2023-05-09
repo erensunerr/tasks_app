@@ -12,6 +12,7 @@ import Checkbox from "../../../components/Checkbox";
 import LINKS from "../../../constants/links";
 
 import styles from "./styles";
+import handleErrorWithAlert from "../../../handleErrorWithAlert";
 
 // TODOx: make a modal for auth errors, -> using alert
 // TODOx: add the first name and last name to firestore users collection
@@ -64,25 +65,16 @@ const Signup = () => {
             ]
         ]
     }
-    const handleErrorWithAlert = (errorCode) => {
-        if (!(errorCode in ALERTS)) {
-            console.error(errorCode);
-            return
-        }
-
-        Alert.alert(...ALERTS[errorCode])
-        console.log(`${errorCode} handled successfully.`)
-    }
 
     const handleSignup = () => {
         console.log(`Signing up with ${firstName}, ${lastName}, ${email}, ${pass}, ${confirmPass}.`)
         if (pass !== confirmPass) {
-            handleErrorWithAlert('local/password-does-not-match');
+            handleErrorWithAlert('local/password-does-not-match', ALERTS);
             return
         }
 
         if (!agreed) {
-            handleErrorWithAlert('local/did-not-agree-legally');
+            handleErrorWithAlert('local/did-not-agree-legally', ALERTS);
             return
         }
 
@@ -104,7 +96,7 @@ const Signup = () => {
                 console.log('User account created & signed in!');
             })
             .catch(error => {
-                handleErrorWithAlert(error.code);
+                handleErrorWithAlert(error.code, ALERTS);
             });
 
     }

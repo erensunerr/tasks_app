@@ -1,5 +1,6 @@
 import {createContext, useState, useEffect} from "react";
 import auth from '@react-native-firebase/auth';
+import firestore from "@react-native-firebase/firestore";
 
 const UserContext = createContext({
     user: null,
@@ -10,6 +11,9 @@ function UserContextProvider({children}) {
     // Set an initializing state whilst Firebase connects
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState();
+
+    // House user data in this state
+    const [data, setData] = useState();
 
     // Handle user state changes
     function onAuthStateChanged(user) {
@@ -22,13 +26,29 @@ function UserContextProvider({children}) {
         return subscriber; // unsubscribe on unmount
     }, []);
 
-    console.log('Initializing:', loading);
-    console.log('User:', user);
+    useEffect(() => {
+
+        if (!user) {
+            return
+        }
+
+        const subscriber = firestore()
+            .collection('users')
+            .doc(user.uid)
+            .onSnapshot(documentSnapshot => {
+                setData(documentSnapshot.data());
+            });
+
+        // Stop listening for updates when no longer required
+        return () => subscriber();
+    }, [user])
+
 
     const context = {
         loading,
         user,
-    }
+        data
+    };
 
     return (
         <UserContext.Provider value={context}>
