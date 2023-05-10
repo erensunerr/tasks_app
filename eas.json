@@ -16,6 +16,9 @@
       "distribution": "internal",
       "ios": {
         "resourceClass": "m-medium"
+      },
+      "cache": {
+        "key": "X"
       }
     },
     "preview": {
@@ -24,7 +27,7 @@
         "resourceClass": "m-medium"
       },
       "cache": {
-        "key": "A"
+        "key": "X"
       }
     },
     "production": {

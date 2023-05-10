@@ -30,17 +30,14 @@
       "supportsTablet": true,
       "bundleIdentifier": "app.tasks",
       "googleServicesFile": "./GoogleService-Info.plist"
-    },
+    }, 
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.gerroo.tasks_app",
       "googleServicesFile": "./google-services.json"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {

@@ -58,7 +58,7 @@ function App() {
             //     );
             // },
             tabBarStyle: {
-                paddingTop: 16,
+                // paddingVertical: 64,
             },
             tabBarShowLabel: false,
             headerShown: false,
