@@ -108,6 +108,15 @@ const AddTask = () => {
                     // Handle submit
                     console.log(`Adding ${description} with tags ${selectedTags} and deadline ${deadline}.`);
 
+                    const midnightDeadline = new Date(
+                        deadline.getFullYear(),
+                        deadline.getMonth(),
+                        deadline.getDate(),
+                        23,
+                        59,
+                        59,
+                    )
+
                     const uid = user.uid;
                     const userDocRef = firestore()
                         .collection('users')
@@ -116,7 +125,7 @@ const AddTask = () => {
                         tasks: firestore.FieldValue.arrayUnion({
                             description,
                             tags: selectedTags,
-                            deadline,
+                            deadline: midnightDeadline,
                             completed: false,
                             id: uuid.v4(),
                         }),
