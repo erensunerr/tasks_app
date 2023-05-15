@@ -22,7 +22,7 @@ const Tasks = () => {
         <SafeAreaView style={[ styles.container ]}>
 
             {
-                data.tasks.length !== 0 ?
+                data?.tasks && data.tasks?.length !== 0 ?
                 <>
                     <Text style={[ styles.title, styles.with_margin ]}>To do Tasks</Text>
                     <TagSelector
@@ -64,7 +64,6 @@ const Tasks = () => {
                     }}>Please add a task using the + button.</Text>
                 </View>
             }
-
             <PlusIcon />
         </SafeAreaView>
     )
