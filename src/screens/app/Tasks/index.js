@@ -1,28 +1,39 @@
+import {useState} from "react";
 import {Text, SafeAreaView, View, ScrollView} from "react-native";
+import {useSelector} from "react-redux";
+
 import PlusIcon from "../../../components/PlusIcon";
 import styles from "./styles";
 import TagSelector from "../../../components/TagSelector";
-import {useContext, useState} from "react";
-import handleErrorWithAlert from "../../../handleErrorWithAlert";
-
-import UserContext from "../../../components/UserContext";
-import firestore from "@react-native-firebase/firestore";
 import Task from "../../../components/Task";
-import getTaskCompletedHandler from "../../../getTaskCompleteHandler";
+import firestore from '@react-native-firebase/firestore';
+
+import handleErrorWithAlert from "../../../handleErrorWithAlert";
 
 const Tasks = () => {
     const [selectedTags, setSelectedTags] = useState([]);
 
-    const { user, data } = useContext(UserContext);
+    const {tasks} = useSelector(state => state.tasks);
+    const {user} = useSelector(state => state.user);
 
-    const handleTaskCompleted = getTaskCompletedHandler(data, user);
-
+    const handleTaskCompletion = (task) => {
+        const docRef = firestore()
+            .collection('users')
+            .doc(user.uid);
+        docRef.update({
+            tasks: tasks.map(
+                (t) => t.id === task.id ? {...t, completed: !t.completed} : t
+            )
+        }).catch(
+            (err) => console.error(`Task completion error: ${err}.`)
+        )
+    }
 
     return (
         <SafeAreaView style={[ styles.container ]}>
 
             {
-                data?.tasks && data.tasks?.length !== 0 ?
+                tasks && tasks.length !== 0 ?
                 <>
                     <Text style={[ styles.title, styles.with_margin ]}>To do Tasks</Text>
                     <TagSelector
@@ -38,7 +49,7 @@ const Tasks = () => {
                         marginTop: 32,
                     }}>
                         {
-                            data.tasks.filter(
+                            tasks.filter(
                                 (task) => (
                                     (selectedTags.length === 0) ||
                                     (selectedTags.filter(
@@ -47,7 +58,7 @@ const Tasks = () => {
                                 )
                             ).map(
                                 (task) => <Task task={task}
-                                                onValueChange={handleTaskCompleted}
+                                                onValueChange={() => handleTaskCompletion(task)}
                                                 style={styles.with_margin}
                                                 key={task.id}
                                 />

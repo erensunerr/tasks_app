@@ -1,15 +1,17 @@
 import { useState } from "react";
-import { SafeAreaView, Text, TextInput, View, TouchableOpacity, ScrollView } from "react-native";
-import Button from "../../../components/Button";
-import InputBox from "../../../components/InputBox";
-import styles from "./styles";
-import Anchor from "../../../components/Anchor";
+import { SafeAreaView, Text, View, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import colors from "../../../constants/colors";
-
 import auth from '@react-native-firebase/auth';
 
 
+import Button from "../../../components/Button";
+import InputBox from "../../../components/InputBox";
+import Anchor from "../../../components/Anchor";
+import styles from "./styles";
+
+
+
+// TODO: error handling doesn't work on android
 
 const Login = () => {
     const nav = useNavigation();

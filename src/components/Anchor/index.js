@@ -1,6 +1,5 @@
-import { Animated, Text } from "react-native";
-import {useState, useRef} from "react";
-import colors from "../../constants/colors";
+import { Text } from "react-native";
+import {useState} from "react";
 
 const Anchor = ({children, onPress, style, ...props}) => {
     // Change opacity on is hover.

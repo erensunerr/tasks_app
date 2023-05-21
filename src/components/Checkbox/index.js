@@ -1,7 +1,6 @@
 import styles from "./styles";
 import {Pressable, View} from "react-native";
 
-
 function Checkbox({ value, onValueChange, style }) {
     return (
         <Pressable

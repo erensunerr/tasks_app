@@ -1,34 +1,20 @@
 import {Text, SafeAreaView, ScrollView, View} from "react-native";
-import PlusIcon from "../../../components/PlusIcon";
-import {useContext} from "react";
-import UserContext from "../../../components/UserContext";
-import styles from "./styles";
-import getTaskCompletedHandler from "../../../getTaskCompleteHandler";
+import {useSelector} from "react-redux";
+
 import Task from "../../../components/Task";
+import PlusIcon from "../../../components/PlusIcon";
+import styles from "./styles";
+import firestore from "@react-native-firebase/firestore";
+
 
 const Home = () => {
-    const {data, user} = useContext(UserContext);
-    const tasks = data?.tasks;
+    const {tasks} = useSelector(state => state.tasks);
+    const {user} = useSelector(state => state.user);
 
     // Get stuff that's due today.
     const currentDate = (new Date()).getTime();
     const getTimeDelta = (t) =>  t - currentDate;
 
-    // const pastDeadline = tasks?.filter(
-    //     ({ deadline, completed }) => !completed && (
-    //         0 <= getTimeDelta(deadline.toDate().getTime()) &&
-    //         getTimeDelta(deadline.toDate().getTime()) <= 24 * 60 * 60 * 1000
-    //     )
-    // )
-
-    // tasks?.forEach(
-    //     ({ deadline }) => console.log(
-    //         deadline.toDate().getTime(),
-    //         currentDate,
-    //         0 <= getTimeDelta(deadline.toDate().getTime()) &&
-    //         getTimeDelta(deadline.toDate().getTime()) <= 24 * 60 * 60 * 1000,
-    //     )
-    // )
     const pastDeadline = tasks?.filter(
         ({ deadline, completed }) => !completed && (
             getTimeDelta(deadline.toDate().getTime()) < 0
@@ -42,7 +28,6 @@ const Home = () => {
         )
     )
 
-    // Tasks that are due next week
     const dueNextWeek = tasks?.filter(
         ({ deadline, completed }) => !completed && (
             (24 * 60 * 60 * 1000) < getTimeDelta(deadline.toDate().getTime()) &&
@@ -50,69 +35,64 @@ const Home = () => {
         )
     )
 
-    const handleTaskCompleted = getTaskCompletedHandler(data, user);
+    const is_completed = [...pastDeadline, ...dueNextWeek, ...dueToday].reduce(
+        (acc, task) => acc && task.completed,
+        true
+    )
+    const handleTaskCompletion = (task) => {
+        const docRef = firestore()
+            .collection('users')
+            .doc(user.uid);
+
+        const otherTasks = tasks.filter(
+            t => t.id !== task.id
+        )
+
+        docRef.update({
+            tasks: [...otherTasks, {...task, completed: !task.completed}]
+        }).catch(
+            (err) => console.error(`Task completion error: ${err}.`)
+        )
+
+    }
+
+    const displayTasks = (tasks, title) => (
+        tasks && tasks.length !== 0 ?
+            <>
+                <Text style={styles.title}>{title}</Text>
+                {
+                    tasks.map(
+                        (task) => <Task
+                            task={task}
+                            onValueChange={() => handleTaskCompletion(task)}
+                            key={task.id}
+                        />
+                    )
+                }
+            </>
+            :
+            null
+    )
 
     return (
         <SafeAreaView style={{flex: 1}}>
             {
+                is_completed &&
+                <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+                    <Text style={{
+                        fontWeight: "bold",
+                        textAlign: "center",
+                    }}>You're done.</Text>
+                </View>
+            }
+            {
                 tasks ?
                     <ScrollView style={{ marginHorizontal: 24 }}>
-                        {   // Past due
-                            pastDeadline && pastDeadline.length !== 0 ?
-                                <>
-                                    <Text style={styles.title}>Past deadline!</Text>
-                                    {
-                                        pastDeadline.map(
-                                            (task) => <Task
-                                                task={task}
-                                                onValueChange={handleTaskCompleted}
-                                                key={task.id}
-                                                style={{}}
-                                            />
-                                        )
-                                    }
-                                </>
-                                :
-                                null
-                        }
-                        {   // If something is due today, display it.
-                            dueToday && dueToday.length !== 0 ?
-                                <>
-                                    <Text style={styles.title}>Due Today</Text>
-                                    {
-                                        dueToday.map(
-                                            (task) => <Task
-                                                task={task}
-                                                onValueChange={handleTaskCompleted}
-                                                key={task.id}
-                                                style={{}}
-                                            />
-                                        )
-                                    }
-                                </>
-                                :
-                                null
-                        }
-                        {
-                            // Due to next week
-                            dueNextWeek && dueNextWeek.length !== 0 ?
-                                <>
-                                    <Text style={styles.title}>Due Next Week</Text>
-                                    {
-                                        dueNextWeek.map(
-                                            (task) => <Task
-                                                task={task}
-                                                onValueChange={handleTaskCompleted}
-                                                key={task.id}
-                                                style={{}}
-                                            />
-                                        )
-                                    }
-
-                                </> :
-                                null
-                        }
-
+                        <>
+                            { displayTasks(pastDeadline, 'Past Deadline') }
+                            { displayTasks(dueToday, 'Due Today') }
+                            { displayTasks(dueNextWeek, 'Next Week') }
+                        </>
                     </ScrollView>
                     :
                     // No tasks

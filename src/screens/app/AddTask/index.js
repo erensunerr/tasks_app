@@ -1,46 +1,80 @@
-import {Text, SafeAreaView, TouchableOpacity, View, ScrollView} from "react-native";
+import {Text, SafeAreaView, TouchableOpacity, View, Platform, ScrollView} from "react-native";
 import { Feather } from "@expo/vector-icons";
-import {useFocusEffect, useNavigation} from "@react-navigation/native";
+import { useNavigation} from "@react-navigation/native";
 import colors from "../../../constants/colors";
 import styles from "./styles";
 import InputBox from "../../../components/InputBox";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {useContext, useState} from "react";
+import {useState} from "react";
 import Button from "../../../components/Button";
-import UserContext from "../../../components/UserContext";
 import firestore from "@react-native-firebase/firestore";
 import handleErrorWithAlert from "../../../handleErrorWithAlert";
 import TagSelector from "../../../components/TagSelector";
 import uuid from 'react-native-uuid';
+import {useSelector} from "react-redux";
+import moment from "moment";
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 
 
 const Label = ({ ...props }) => <Text style={[styles.label]} {...props} />;
 
+// TODO: the calendar constantly opens on android
+// TODO: wrap everything in a scroll view
+
 const AddTask = () => {
     const navigation = useNavigation();
-    const {user} = useContext(UserContext);
+    const {user} = useSelector(state => state.user);
 
     // States
     const [description, setDescription] = useState('');
     const [selectedTags, setSelectedTags] = useState([]);
     const [deadline, setDeadline] = useState(new Date());
 
+    console.log('deadline', deadline);
+
     navigation.addListener(
         'focus', () => {
             // Reset state on focus
             setDescription('');
             setSelectedTags([]);
-            setDeadline(new Date());
+            handleSetDeadline(new Date());
         }
     )
-    // useFocusEffect(
-    //     () => {
-    //
-    //     }
-    // )
+
+    const handleTaskCreation = () => {
+        console.log(`Adding ${description} with tags ${selectedTags} and deadline ${deadline}.`);
+
+        console.log(`${user.uid}`)
+        const userDocRef = firestore()
+            .collection('users')
+            .doc(user.uid);
+
+        userDocRef.update({
+            tasks: firestore.FieldValue.arrayUnion({
+                description,
+                deadline,
+                tags: selectedTags,
+                completed: false,
+                id: uuid.v4(),
+            }),
+        }).then(() => {
+            navigation.goBack();
+        }).catch(
+            (error) => handleErrorWithAlert(error.code, {})
+        );
+    }
+
+    const handleSetDeadline = (deadline) => {
+        const m = moment(deadline);
+        m.minute(59);
+        m.second(59);
+        m.hour(23);
+        setDeadline(m.toDate());
+    }
 
     return (
         <SafeAreaView style={[ styles.container ]}>
+            <ScrollView style={[ styles.scroll_container ]}>
             <View style={[ styles.back_button ]}>
 
                 {/*     Header (go back button)     */}
@@ -89,12 +123,29 @@ const AddTask = () => {
                 borderRadius: 8,
                 borderColor: colors.dark_blue,
             }}>
-                <DateTimePicker
-                    value={deadline}
-                    onChange={
-                        (e, d) => setDeadline(d)
-                    }
-                />
+                {
+                    Platform.OS === 'ios' ?
+                        <DateTimePicker
+                            value={deadline}
+                            onChange={
+                                (e, d) => handleSetDeadline(d)
+                            }
+                        /> :
+                        <TouchableOpacity style={{
+                            backgroundColor: colors.light_gray,
+                            borderRadius: 8,
+                            paddingVertical: 8,
+                            paddingHorizontal: 12,
+                            marginHorizontal: 8,
+
+                        }} onPress={() => DateTimePickerAndroid.open({
+                                value: deadline,
+                                onChange: (e, d) => handleSetDeadline(d)
+                            })
+                        }>
+                            <Text>{moment(deadline).format('MMM D, YYYY')}</Text>
+                        </TouchableOpacity>
+                }
             </View>
 
             {/*     Add task button    */}
@@ -104,39 +155,8 @@ const AddTask = () => {
                 style={{
                     marginTop: 32,
                 }}
-                onPress={() => {
-                    // Handle submit
-                    console.log(`Adding ${description} with tags ${selectedTags} and deadline ${deadline}.`);
-
-                    const midnightDeadline = new Date(
-                        deadline.getFullYear(),
-                        deadline.getMonth(),
-                        deadline.getDate(),
-                        23,
-                        59,
-                        59,
-                    )
-
-                    const uid = user.uid;
-                    const userDocRef = firestore()
-                        .collection('users')
-                        .doc(uid);
-                    userDocRef.update({
-                        tasks: firestore.FieldValue.arrayUnion({
-                            description,
-                            tags: selectedTags,
-                            deadline: midnightDeadline,
-                            completed: false,
-                            id: uuid.v4(),
-                        }),
-                    }).then(() => {
-                        // Reset state
-
-                        navigation.goBack();
-                    }).catch(
-                        (error) => handleErrorWithAlert(error.code, {})
-                    );
-                }} />
+                onPress={() => handleTaskCreation()} />
+            </ScrollView>
         </SafeAreaView>
     )
 };

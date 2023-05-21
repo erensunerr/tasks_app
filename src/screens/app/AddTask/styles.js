@@ -13,7 +13,10 @@ const styles = StyleSheet.create({
         color: colors.purple
     },
     container: {
-        marginHorizontal: 24,
+        flex: 1,
+    },
+    scroll_container: {
+        paddingHorizontal: 24,
     },
     label: {
         fontWeight: "bold",

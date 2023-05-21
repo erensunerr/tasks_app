@@ -1,4 +1,4 @@
-import {SafeAreaView, Text, TextInput, View, TouchableOpacity, ScrollView, Alert} from "react-native";
+import {SafeAreaView, Text, View, ScrollView} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 import {useState} from "react";
 import * as Linking from 'expo-linking';

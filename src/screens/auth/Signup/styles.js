@@ -33,12 +33,12 @@ const styles = StyleSheet.create({
     },
     text_group: {
         flexDirection: "row",
-        flexWrap: "wrap",
         alignItems: "center",
         marginVertical: 24,
     },
     text_group_wrap: {
         marginLeft: 8,
+        flexShrink: 1,
     },
     centered: {
         flexDirection: "row",

@@ -1,4 +1,4 @@
-import {SafeAreaView, View, Text, ImageBackground} from "react-native";
+import {View, Text, ImageBackground} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 
 import onboarding_background from '../../../assets/onboarding_background.jpg';

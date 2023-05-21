@@ -2,64 +2,66 @@ import { StatusBar } from 'expo-status-bar';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {DefaultTheme, NavigationContainer} from "@react-navigation/native";
 
-
 import Onboarding from './src/screens/auth/Onboarding';
 import Login from "./src/screens/auth/Login";
 import Signup from "./src/screens/auth/Signup";
-import UserContext, {UserContextProvider} from "./src/components/UserContext";
+import store from "./src/redux/store";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import Demo from "./src/screens/app/Demo";
-import {useContext} from "react";
+import { useEffect} from "react";
 import Home from "./src/screens/app/Home";
 import Tasks from "./src/screens/app/Tasks";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import DrawerMenu from "./src/screens/app/DrawerMenu";
 import AddTask from "./src/screens/app/AddTask";
 
-import { getHeaderTitle } from '@react-navigation/elements';
-import {View, Text, TouchableOpacity, SafeAreaView} from "react-native";
-import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import colors from "./src/constants/colors";
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
+
+// Redux Imports
+import {Provider as ReduxProvider, useSelector, useDispatch} from 'react-redux';
+import { set_user } from "./src/redux/slices/user";
+import {set_tasks} from "./src/redux/slices/tasks";
 
 
 const OnboardingStack = createNativeStackNavigator();
-
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
 function App() {
-    const {user, loading} = useContext(UserContext);
+    const { user } = useSelector(state => state.user);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        // Now we can login, logout etc. with firebase functions and still have the state in redux.
+        return auth().onAuthStateChanged(
+            user => {
+                dispatch(set_user(user));
+            }
+        );
+    }, []);
+
+    useEffect(() => {
+        if (!user) {
+            return
+        }
+        const subscriber = firestore()
+            .collection('users')
+            .doc(user.uid)
+            .onSnapshot(documentSnapshot => {
+                dispatch(set_tasks(
+                    documentSnapshot.data()?.tasks
+                ))
+            });
+
+        // Stop listening for updates when no longer required
+        return () => subscriber();
+    }, [user]);
 
     const Tabs = () => (
         <Tab.Navigator screenOptions={{
-            // header: ({ navigation, route, options }) => {
-            //     const title = getHeaderTitle(options, route.name);
-            //
-            //     return(
-            //         <SafeAreaView>
-            //             <View style={{
-            //                 flexDirection: "row",
-            //                 justifyContent: "space-between",
-            //                 paddingVertical: 8,
-            //                 paddingHorizontal: 12,
-            //             }}>
-            //                 <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-            //                     <Ionicons name="md-menu-sharp" size={24} color="black" />
-            //                 </TouchableOpacity>
-            //                 <Text style={{
-            //                     fontSize: 16,
-            //                     fontWeight: "bold",
-            //                 }}>{title}</Text>
-            //                 <View />
-            //             </View>
-            //         </SafeAreaView>
-            //     );
-            // },
-            tabBarStyle: {
-                // paddingVertical: 64,
-            },
             tabBarShowLabel: false,
             headerShown: false,
         }}>
@@ -139,9 +141,9 @@ const theme = {
 
 // Wrap app with the necessary contexts before exporting.
 export default () => (
-    <UserContextProvider>
+    <ReduxProvider store={store}>
         <NavigationContainer theme={theme}>
             <App />
         </NavigationContainer>
-    </UserContextProvider>
+    </ReduxProvider>
 )
